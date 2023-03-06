@@ -1,0 +1,238 @@
+<html>
+<style>
+    body {
+        font-family: Helvetica;
+        width: 250mm;
+        margin-left: 18mm;
+        margin-right: 32mm;
+    }
+
+    .image-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .name-container {
+        text-align: right;
+        font-weight: bold;
+        margin-top: 70px;
+    }
+
+    .info-table {
+        border-collapse: collapse;
+        width: 60%;
+        /* margin-left: 100px; */
+    }
+
+    .info-table td:first-child {
+        font-weight: bold;
+    }
+
+    .bold-font {
+        font-weight: bold;
+    }
+
+    .info-table td {
+        padding: 10px;
+    }
+
+    .second-table {
+        border-collapse: collapse;
+        width: 98%;
+        padding-top: 20px;
+    }
+
+    .second-table tr {
+        padding: 20px;
+    }
+
+    .second-table-header {
+        background-color: #f2f2f2;
+        border: 1px solid black;
+        
+    }
+
+    .second-table-header td {
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .second-table td {
+        padding: 15px;
+        font-weight: normal;
+    }
+
+    .product-price {
+        text-align: center;
+    }
+
+    .concepto-cell {
+        width: 80%;
+        padding: 8px;
+        text-align: left;
+        font-weight: bold;
+    }
+
+    .importe-cell {
+        width: 20%;
+        border: 1px solid black;
+        padding: 8px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .table-container {
+        margin-top: 500px;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 50px;
+    }
+
+    .third-table {
+        border-collapse: collapse;
+        padding: 20px auto;
+        /* centrar horizontalmente */
+        width: 98%;
+    }
+
+    .base-cell {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: center;
+        font-weight: bold;
+        text-align: left;
+        /* alinear texto a la izquierda */
+    }
+
+    .value-cell {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: center;
+        font-weight: bold;
+        text-align: right;
+        /* alinear texto a la derecha */
+    }
+
+    .right-align {
+        text-align: right;
+        /* alinear texto a la derecha */
+    }
+
+    .vertical-text {
+        /* color: transparent; */
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        /* cambiar la dirección del texto */
+        transform: rotate(180deg);
+        position: absolute;
+        margin-top: 27%;
+        width: max-content;
+        height: max-content;
+        font-size: 11px;
+        margin-right: 210mm;
+    }
+
+    .vertical-text-date {
+        /* color: transparent; */
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        /* cambiar la dirección del texto */
+        transform: rotate(180deg);
+        position: absolute;
+        width: max-content;
+        height: max-content;
+        font-size: 13px;
+        color: grey;
+        margin-top: 75%;
+        right: -1px;
+    }   
+</style>
+
+<head>
+    <title>Factura Movistar</title>
+    <!-- <link rel="stylesheet" type="text/css" href="styles.css" /> -->
+</head>
+
+<body>
+    <div class="page">
+        <div class="image-container">
+            <img src="data:image/png;base64,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"
+                width="950" />
+        </div>
+        <div class="name-container">
+            <p>#INVOICE_FULL_NAME</p>
+        </div>
+        <div class="vertical-text">
+            TELEFONICA DE ESPAÑA, S.A.U. Gran Via 28. 28013 -Madrid. R.M. de Madrid, Hª M-213180, Fº6 Tº13.170.I. 1ª.
+            CIF Nº A-82018474
+        </div>
+        <div class="vertical-text-date" >
+            ww_11_12_2022
+        </div>
+        <table class="info-table">
+            <tr>
+                <td class="bold-font">Fecha factura:</td>
+                <td>#INVOICE_DATE</td>
+            </tr>
+            <tr>
+                <td class="bold-font">Fecha periodo factura:</td>
+                <td>#INVOICE_PERIOD_DATE</td>
+            </tr>
+            <tr>
+                <td class="bold-font">Nº factura:</td>
+                <td>#INVOICE_NUMBER</td>
+            </tr>
+            <tr>
+                <td class="bold-font">Nº cliente:</td>
+                <td>#INVOICE_CLIENT_NUMBER</td>
+            </tr>
+            <tr>
+                <td class="bold-font">Nombre titular:</td>
+                <td>#INVOICE_PRIMARY_CLIENT_NAME</td>
+            </tr>
+            <tr>
+                <td class="bold-font">DNI:</td>
+                <td>#INVOICE_CLIENT_DOCUMENT_ID</td>
+            </tr>
+        </table>
+        <div class="image-container">
+            <table class="second-table">
+                <tr class="second-table-header">
+                    <td class="concepto-cell">CONCEPTO</td>
+                    <td class="importe-cell">IMPORTE</td>
+                </tr>
+                <tr>
+                    <!-- TODO: cambiar esto para meter aquí las líneas de producto -->
+                    <td class="">Alquiler de línea</td>
+                    <td class="product-price">8,8€</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="table-container">
+            <table class="third-table">
+                <tr>
+                    <td rowspan="2" class="base-cell">
+                        <p>BASE IMPONIBLE:</p>
+                        <p style="tab-size: 8!;">IMPUESTO &emsp14; #TAX_PERCENTAGE</p>
+                        <p>TOTAL FACTURA:</p>
+                    </td>
+                    <td class="value-cell">
+                        <p>#INVOICE_TAX</p>
+                        <p>#INVOICE_IMPONIBLE_TAX</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="value-cell">#INVOICE_TOTAL_AMOUNT</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="image-container">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAC7gAAAB7CAMAAADTsD2rAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABJQTFRFAAAAv7+/QEBAf39/z8/P////VWEElAAAAAZ0Uk5T//////8As7+kvwAAAolJREFUeNrs1kEKwDAIAEGT1v9/uU+wQsAcZs4i4mkjO95VSgAA4LhoTe8oeSkAAAh3AAAQ7sIdAACEOwAAINwBAEC4C3cAABDuAACAcAcAAOEu3AEAQLgDAADCHQAAhDsAACDcAQBAuAt3AAAQ7gAAgHAHAADhLtwBAEC4AwAAwh0AAIS7cAcAAOEOAADCXbgDAIBwBwAAhDsAAAh34Q4AAMIdAAAQ7gAAINyFOwAACHcAAEC4AwCAcAcAAIQ7AAAId+EOAADCHQAAEO4AACDchTsAAAh3AABAuAMAgHAX7gAAINwBAEC4C3cAABDuAACAcAcAAOEu3AEAYDbcV8x56vsmzwMAgHsIdwAAEO7CHQAAhDsAAAh34Q4AAMJduAMAgHAHAADhLtwBAEC4C3cAABDuAAAg3IU7AAAIdwAAEO7CHQAAhLtwBwAA4Q4AAMJduAMAgHAX7gAAINwBAEC4C3cAABDuAACAcAcAAOEu3AEAQLgDAIBwF+4AACDchTsAAAh3AAAQ7sIdAACEu3AHAADhDgAAwl24AwCAcAcAAOEu3AEAQLgLdwAAEO4AACDchTsAAEzKjn14HwAA8ItwBwAA4Q4AAAh3AAAQ7sIdAACEOwAAINwBAEC4C3cAABDuAACAcAcAAOHupQAAINwBAEC4C3cAABDuAACAcAcAAOEu3AEAQLgDAADCHQAAhLtwBwAA4Q4AAAh3AAAQ7gAAgHAHAADhLtwBAEC4AwAAwh0AAIS7cAcAAOEOAAAIdwAAEO7CHQAAhDsAAAh34Q4AAMIdAAAQ7gAAINyFOwAACHcAAEC4AwCAcBfuAAAg3AEAAOEOAADCHQAAEO4AACDchTsAANzjE2AAn8ECBnk/DWsAAAAASUVORK5CYII="
+                width="930" />
+        </div>
+    </div>
+</body>
+
+</html>
