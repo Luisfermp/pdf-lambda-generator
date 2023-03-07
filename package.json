@@ -3,8 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "engines": {
+    "node": "^16"
+  },
   "dependencies": {
-    "chrome-aws-lambda": "^5.2.1",
-    "puppeteer-core": "^5.2.0"
+    "@sparticuz/chromium": "110.0.0",
+    "puppeteer-core": "19.6.3"
+  },
+  "devDependencies": {
+    "serverless": "^3.27.0"
   }
 }
