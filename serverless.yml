@@ -35,58 +35,14 @@ provider:
           Action:
             - s3:PutObject
           Resource: !Join ["/", [!GetAtt "PdfsBucket.Arn", "*"]]
-
 layers:
   helvetica:
     path: layers
-
-
 functions:
   hello:
     handler: handler.handler
     timeout: 900
     iamRoleStatementsInherit: true
-#    The following are a few example events you can configure
-#    NOTE: Please make sure to change your handler code to work with those events
-#    Check the event documentation for details
-#    events:
-#      - httpApi:
-#          path: /users/create
-#          method: get
-#      - websocket: $connect
-#      - s3: ${env:BUCKET}
-#      - schedule: rate(10 minutes)
-#      - sns: greeter-topic
-#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
-#      - alexaSkill: amzn1.ask.skill.xx-xx-xx-xx
-#      - alexaSmartHome: amzn1.ask.skill.xx-xx-xx-xx
-#      - iot:
-#          sql: "SELECT * FROM 'some_topic'"
-#      - cloudwatchEvent:
-#          event:
-#            source:
-#              - "aws.ec2"
-#            detail-type:
-#              - "EC2 Instance State-change Notification"
-#            detail:
-#              state:
-#                - pending
-#      - cloudwatchLog: '/aws/lambda/hello'
-#      - cognitoUserPool:
-#          pool: MyUserPool
-#          trigger: PreSignUp
-#      - alb:
-#          listenerArn: arn:aws:elasticloadbalancing:us-east-1:XXXXXX:listener/app/my-load-balancer/50dc6c495c0c9188/
-#          priority: 1
-#          conditions:
-#            host: example.com
-#            path: /hello
-
-#    Define function environment variables here
-#    environment:
-#      variable2: value2
-
-# you can add CloudFormation resource templates here
 resources:
   Resources:
     PdfsBucket:
@@ -94,17 +50,109 @@ resources:
       Properties:
         BucketName: pdfs-output
         PublicAccessBlockConfiguration:
-          BlockPublicAcls: true
-          BlockPublicPolicy: true
-          IgnorePublicAcls: true
-          RestrictPublicBuckets: true
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+        # TODO: change that to allow only cms download
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ["*"]
+              AllowedMethods: ["PUT", "GET"]
+              AllowedOrigins: ["*"]
+        LifecycleConfiguration:
+          Rules:
+            - AbortIncompleteMultipartUpload:
+                DaysAfterInitiation: 1
+              Status: Enabled
+    # PdfsOriginAccessIdentity:
+    #   Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    #   Properties:
+    #     CloudFrontOriginAccessIdentityConfig:
+    #       Comment: !Join ["-", ["access", "identity", !Ref PdfsBucket]]
+    PdfsBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref PdfsBucket
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+            # TODO: change that to allow only cms download using urls
+              Principal: "*"
+              Condition:
+                StringLike:
+                  'aws:Referer':
+                    # TODO: review this for other environments
+                    - 'https://lite.movistarplus.es/*'
+              Action:
+                - s3:GetObject
+              Resource: !Join ["/", [!GetAtt PdfsBucket.Arn, "*"]]
+    # PdfsDistributionCachePolicy:
+    #   Type: AWS::CloudFront::CachePolicy
+    #   Properties:
+    #     CachePolicyConfig:
+    #       # Name: ${env:PROJECT}-${self:provider.stage}-assets-cache-policy
+    #       Name: sample-dev-pdfs-cache-policy
+    #       DefaultTTL: 86400 # 1 day
+    #       MinTTL: 86400 # 1 day
+    #       MaxTTL: 31536000 # 1 year
+    #       ParametersInCacheKeyAndForwardedToOrigin:
+    #         CookiesConfig:
+    #           CookieBehavior: none
+    #         HeadersConfig:
+    #           HeaderBehavior: whitelist
+    #           Headers:
+    #             - Origin
+    #             - Access-Control-Request-Method
+    #             - Access-Control-Request-Headers
+    #         QueryStringsConfig:
+    #           QueryStringBehavior: none
+    #         EnableAcceptEncodingGzip: true
+    # PdfsDistributionOriginRequestPolicy:
+    #   Type: AWS::CloudFront::OriginRequestPolicy
+    #   Properties:
+    #     OriginRequestPolicyConfig:
+    #       Name: sample-dev-pdfs-origin-request-policy
+    #       CookiesConfig:
+    #         CookieBehavior: none
+    #       HeadersConfig:
+    #         HeaderBehavior: whitelist
+    #         Headers:
+    #           - Origin
+    #           - Access-Control-Request-Method
+    #           - Access-Control-Request-Headers
+    #       QueryStringsConfig:
+    #         QueryStringBehavior: none
+    # PdfsDistribution:
+    #   Type: AWS::CloudFront::Distribution
+    #   Properties:
+    #     DistributionConfig:
+    #       Origins:
+    #         - DomainName: !GetAtt PdfsBucket.RegionalDomainName
+    #           Id: pdfsS3Origin
+    #           S3OriginConfig:
+    #             OriginAccessIdentity:
+    #               !Join [
+    #                 "/",
+    #                 [
+    #                   "origin-access-identity/cloudfront",
+    #                   !Ref PdfsOriginAccessIdentity,
+    #                 ],
+    #               ]
+    #       Enabled: true
+    #       DefaultCacheBehavior:
+    #         AllowedMethods:
+    #           - GET
+    #           - HEAD
+    #           - OPTIONS
+    #         CachedMethods:
+    #           - GET
+    #           - HEAD
+    #           - OPTIONS
+    #         TargetOriginId: pdfsS3Origin
+    #         CachePolicyId: !GetAtt PdfsDistributionCachePolicy.Id
+    #         OriginRequestPolicyId: !GetAtt PdfsDistributionOriginRequestPolicy.Id
+    #         ViewerProtocolPolicy: redirect-to-https
+    #       PriceClass: PriceClass_100
+    #       ViewerCertificate:
+    #         CloudFrontDefaultCertificate: true

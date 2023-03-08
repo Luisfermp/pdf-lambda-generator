@@ -6,10 +6,11 @@ s3 = new aws.S3(),
 chromium = require('@sparticuz/chromium'),
 puppeteer = require('puppeteer-core'),
 {join} = require('path'),
-{readFile, writeFile} = require('fs'),
+{readFile, writeFile, unlink } = require('fs'),
 {promisify} = require('util'),
 readFileAsync = promisify(readFile),
-writeFileAsync = promisify(writeFile);
+writeFileAsync = promisify(writeFile),
+unlinkAsync = promisify(unlink);
 
 exports.handler = async (event, context, callback) => {
   console.log('Doing stuff...');
@@ -69,9 +70,23 @@ exports.handler = async (event, context, callback) => {
   await s3.putObject({
     Bucket: 'pdfs-output',
     Key: 'invoice.pdf',
+    ContentType: 'application/pdf',
+    ContentDisposition: 'inline',
     Body: filePdf,
   }).promise();
-  
+
+  console.log('File uploaded to S3')
+
+  const url = s3.getSignedUrl('getObject', {
+    Bucket: 'pdfs-output',
+    Key: 'invoice.pdf',
+    Expires: 60 * 5
+  })
+
+  console.log('URL:', url);
+
+  await unlinkAsync('/tmp/invoice.pdf');
+
   await browser.close();
   
   return callback(null, result);
